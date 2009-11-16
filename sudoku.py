@@ -1,6 +1,11 @@
 import sys
+import array
 import copy
 import time
+
+# TODO: possible optimizations
+#  * Keep running track of available table instead of calculating each
+#    and every time.
 
 def pprint_puzzle(puzzle, empty='.'):
     """Given a puzzle, pretty print it."""
@@ -24,6 +29,16 @@ def nums_available(puzzle, i, j):
     for row in (row[jrange:jrange + 3] for row in (colset for colset in puzzle[irange:irange + 3])):
         gridset.update([x for x in row])
     return set(xrange(1, 10)) - colset - rowset - gridset
+#    used_set = set()
+#    jrange = int(j / 3) * 3
+#    irange = int(i / 3) * 3
+#    for element in (row[j] for row in puzzle):
+#        used_set.add(element)
+#    for element in puzzle[i]:
+#        used_set.add(element)
+#    for row in (row[jrange:jrange + 3] for row in (colset for colset in puzzle[irange:irange + 3])):
+#        used_set.update([x for x in row])
+#    return set(range(1,10)) - used_set
 
 def solve_puzzle(puzzle):
     """Do it now!"""
@@ -106,7 +121,10 @@ if __name__ == '__main__':
 #            [0,0,0,0,0,0,0,0,0],
 #            [0,0,0,0,8,0,0,0,0],
 #            [0,0,0,0,0,3,0,0,0] ]
-
+    newpuz = []
+    for row in puzzle:
+        newpuz.append(array.array('B', row))
+    puzzle = newpuz
     pprint_puzzle(puzzle)
     print '-' * 20 + ' SOLVING ' + '-' * 20
     stime = time.clock()
