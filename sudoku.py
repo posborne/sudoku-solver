@@ -2,22 +2,6 @@ import sys
 import copy
 import time
 
-def nums_available(puzzle, i, j):
-    """Return all numbers available given a puzzle and i, j position"""
-    colset = set()
-    for row in puzzle:
-        colset.add(row[j])
-    colset = colset
-    rowset = set(puzzle[i])
-    gridset = nums_in_grid(puzzle, i, j)
-    return set(range(1, 10)) - colset - rowset - gridset
-
-def nums_in_grid(puzzle, i, j):
-    res = set()
-    for row in [row[int(j / 3) * 3:int(j / 3) * 3 + 3] for row in[colset for colset in puzzle[int(i / 3) * 3:int(i / 3) * 3 + 3]]]:
-        res.update([x for x in row])
-    return res
-    
 def pprint_puzzle(puzzle, empty='.'):
     """Given a puzzle, pretty print it."""
     ROWSEP = ' +' + '-' * (2 * len(puzzle[0]) + 5) + '+'
@@ -30,19 +14,30 @@ def pprint_puzzle(puzzle, empty='.'):
             print ' |'
         print ROWSEP
 
+def nums_available(puzzle, i, j):
+    """Return all numbers available given a puzzle and i, j position"""
+    jrange = int(j / 3) * 3
+    irange = int(i / 3) * 3
+    colset = set((row[j] for row in puzzle))
+    rowset = set(puzzle[i])
+    gridset = set()
+    for row in (row[jrange:jrange + 3] for row in (colset for colset in puzzle[irange:irange + 3])):
+        gridset.update([x for x in row])
+    return set(xrange(1, 10)) - colset - rowset - gridset
+
 def solve_puzzle(puzzle):
     """Do it now!"""
     res = solve_puzzle_helper(puzzle, 0, 0)
     if isinstance(res, tuple):
         return res[1]
     else:
-        print "No Solutions Found?"
+        return False # no solutions found
 
 def solve_puzzle_helper(puzzle, i, j):
     """Recursion, Oh Yeah"""
     next = (i, j + 1) if j < 8 else (i + 1, 0)
     mypuzzle = copy.deepcopy(puzzle)
-    if not eliminate_naked_singles(mypuzzle, i, j):
+    if not eliminate_naked_singles(mypuzzle):
         return False # elimination detected a bad path
     available = nums_available(mypuzzle, i, j)
     if i == 8 and j == 8:
