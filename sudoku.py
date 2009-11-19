@@ -74,6 +74,7 @@ def eliminate_naked_singles(puzzle, available, istart=0, jstart=0):
             if puzzle[i][j] == 0 and len(available[i][j]) == 1:
                 puzzle[i][j] = available[i][j].pop()
                 update_from_position(puzzle, available, i, j)
+                eliminate_naked_singles(puzzle, available)
     return True
 
 def solve_puzzle(puzzle):
