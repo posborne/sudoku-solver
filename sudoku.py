@@ -3,6 +3,7 @@ import sys
 import array
 import copy
 import time
+import itertools
 
 # TODO: possible optimizations
 #  * Keep running track of available table instead of calculating each
@@ -58,7 +59,7 @@ def update_from_position(puzzle, available, i, j):
     irange = int(i / 3) * 3
 
     # update rows and columns
-    for avail in ([row[j] for row in available] + available[i]):
+    for avail in itertools.chain((row[j] for row in available), available[i]):
         avail.discard(num)
     
     for row in available[irange:irange + 3]:
@@ -121,6 +122,10 @@ def solve_puzzle_helper(puzzle, av, i, j):
     return False
 
 def convert_to_array(puzzle):
+    """Convert a puzzle to use byte arrays for its most internal format.  This
+    is a small optimization which decreases the amount of time required to do
+    deepcopy operations.
+    """
     puz = []
     for row in puzzle:
         puz.append(array.array('B', row))
@@ -139,5 +144,6 @@ def solve_and_time(puzzle):
 
 if __name__ == '__main__':
     solve_and_time(puzzles.puzzle0)
-    #solve_and_time(puzzles.puzzle1)
-    #solve_and_time(puzzles.puzzle2)
+    solve_and_time(puzzles.puzzle1)
+    solve_and_time(puzzles.puzzle2)
+    
