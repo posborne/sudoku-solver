@@ -68,13 +68,17 @@ def update_from_position(puzzle, available, i, j):
     return available
 
 def eliminate_naked_singles(puzzle, available, istart=0, jstart=0):
-    """Eliminate all naked singles"""
+    """Eliminate all naked singles.  Naked singles are entries in the available
+    table who only have one possible option.  We know the puzzle should contain
+    this one item, so we pop it off and go."""
     for i in xrange(istart, 9):
         for j in xrange(jstart, 9):
             if puzzle[i][j] == 0 and len(available[i][j]) == 1:
                 puzzle[i][j] = available[i][j].pop()
                 update_from_position(puzzle, available, i, j)
-                eliminate_naked_singles(puzzle, available)
+                return eliminate_naked_singles(puzzle, available)
+            elif len(available[i][j]) == 0 and puzzle[i][j] == 0:
+                return False
     return True
 
 def solve_puzzle(puzzle):
