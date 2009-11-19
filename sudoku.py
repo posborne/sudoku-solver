@@ -71,9 +71,8 @@ def eliminate_naked_singles(puzzle, available, istart=0, jstart=0):
     """Eliminate all naked singles"""
     for i in xrange(istart, 9):
         for j in xrange(jstart, 9):
-            avail = available[i][j]
-            if puzzle[i][j] == 0 and len(avail) == 1:
-                puzzle[i][j] = avail.pop()
+            if puzzle[i][j] == 0 and len(available[i][j]) == 1:
+                puzzle[i][j] = available[i][j].pop()
                 update_from_position(puzzle, available, i, j)
     return True
 
@@ -90,25 +89,23 @@ def solve_puzzle_helper(puzzle, av, i, j):
     """Recursion, Oh Yeah"""
     next = (i, j + 1) if j < 8 else (i + 1, 0)
     available = av[i][j]
-    #sprint i, ",", j
-    #pprint_puzzle(puzzle)
-    #if not eliminate_naked_singles(mypuzzle, av):
-    #    return False
+    mypuzzle = copy.deepcopy(puzzle)
+    if not eliminate_naked_singles(mypuzzle, av):
+        return False
     if i == 8 and j == 8:
-        if len(available) == 1 or puzzle[i][j] != 0:
+        if len(available) == 1 or mypuzzle[i][j] != 0:
             if len(available) == 1:
-                puzzle[i][j] = available.pop()
-            return True, puzzle
+                mypuzzle[i][j] = available.pop()
+            return True, mypuzzle
         else:
             return False
-    elif puzzle[i][j] != 0:
-        res = solve_puzzle_helper(puzzle, av, *next)
+    elif mypuzzle[i][j] != 0:
+        res = solve_puzzle_helper(mypuzzle, av, *next)
         if isinstance(res, tuple):
             return res
-    elif len(available) == 0 and puzzle[i][j] == 0:
+    elif len(available) == 0 and mypuzzle[i][j] == 0:
         return False
     else:
-        mypuzzle = copy.deepcopy(puzzle)
         for num in available:
             locavail = copy.deepcopy(av)
             mypuzzle[i][j] = num
@@ -118,9 +115,16 @@ def solve_puzzle_helper(puzzle, av, i, j):
                 return res
     return False
 
+def convert_to_array(puzzle):
+    puz = []
+    for row in puzzle:
+        puz.append(array.array('B', row))
+    return puz
+
 def solve_and_time(puzzle):
     print ''
     print '~' * 20 + ' PUZZLE ' + '~' * 20
+    puzzle = convert_to_array(puzzle)
     pprint_puzzle(puzzle)
     print '-' * 20 + ' SOLVING ' + '-' * 20
     stime = time.clock()
@@ -129,6 +133,6 @@ def solve_and_time(puzzle):
     pprint_puzzle(puzzle)
 
 if __name__ == '__main__':
-    #solve_and_time(puzzles.puzzle0)
-    solve_and_time(puzzles.puzzle1)
-    solve_and_time(puzzles.puzzle2)
+    solve_and_time(puzzles.puzzle0)
+    #solve_and_time(puzzles.puzzle1)
+    #solve_and_time(puzzles.puzzle2)
